@@ -104,31 +104,23 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 
                 if (file.isFile() && file.getName().endsWith(".xml")) {
                     dataList.add(new Data(file.getName()));
-                   dataAdapter.notifyDataSetChanged();
+                    dataAdapter.notifyDataSetChanged();
                 }
             }
         }
 
-//        for (File file : files) {
-//            filenames.add(file.getName());
-//        }
-//        List<File> selectedFiles = new ArrayList<File>();
 
 
 
 
- //       for (int i = 0; i < filenames.size(); i++) {
-//            View listItem = listView.getChildAt(i);
-//            CheckBox checkBox = (CheckBox) listItem.findViewById(R.id.checkbox);
-//            if (checkBox.isChecked()) {
-//                selectedFiles.add(files[i]);
-//            }
-//        }
+
+
     }
     private void processSelectedXmlFiles() {
         File officialDir = new File(getFilesDir() + "/datamain");
         officialDir.mkdirs();
         for (File file : selectedFiles) {
+            System.out.println(file);
 
             FileInputStream fis = null;
             try {
@@ -238,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 //            e.printStackTrace();
 //        }
        // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("*/*"); // Hiển thị tất cả các loại tệp
+//        intent.setType("*/*");
 //        startActivityForResult(intent,  PICK_FILE_REQUEST_CODE);
 
 
