@@ -39,20 +39,18 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class MainActivity extends AppCompatActivity implements DataAdapter.onClickItem{
+public class MainActivity extends AppCompatActivity implements DataAdapter.onClickItem {
 
     RecyclerView rvData;
     ArrayList<Data> dataList;
     DataAdapter dataAdapter;
-    Data clickData ;
+    Data clickData;
     int IMPORT_REQUEST_CODE = 1;
-    Button btImport ;
+    Button btImport;
     private ArrayList<String> selectedXmlFilesList;
-    private final String DATA_MAIN = "datamain";
     List<String> filenames = new ArrayList<String>();
     List<File> selectedFiles = new ArrayList<File>();
     File[] files;
-
 
 
     @Override
@@ -67,18 +65,16 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 
         rvData.setLayoutManager(new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL, false));
         rvData.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
-        dataAdapter = new DataAdapter(MainActivity.this, dataList, MainActivity.this  );
+        dataAdapter = new DataAdapter(MainActivity.this, dataList, MainActivity.this);
         rvData.setAdapter(dataAdapter);
 
         btImport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 processSelectedXmlFiles();
+                startActivity(new Intent(MainActivity.this, ImportedDataActivity.class));
             }
         });
-
-
-
 
 
         try {
@@ -88,23 +84,19 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
         }
 
 
-
     }
 
 
-
-
-
     public void reachDat() throws IOException {
-       // File directory = new File(Environment.getExternalStorageDirectory() + "/data");
+        // File directory = new File(Environment.getExternalStorageDirectory() + "/data");
         File folder = new File(getFilesDir(), "data");
-            files = folder.listFiles();
+        files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
 
                 if (file.isFile() && file.getName().endsWith(".xml")) {
-                    dataList.add(new Data(file.getName(),file.getPath()));
-                   dataAdapter.notifyDataSetChanged();
+                    dataList.add(new Data(file.getName(), file.getPath()));
+                    dataAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -115,9 +107,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 //        List<File> selectedFiles = new ArrayList<File>();
 
 
-
-
- //       for (int i = 0; i < filenames.size(); i++) {
+        //       for (int i = 0; i < filenames.size(); i++) {
 //            View listItem = listView.getChildAt(i);
 //            CheckBox checkBox = (CheckBox) listItem.findViewById(R.id.checkbox);
 //            if (checkBox.isChecked()) {
@@ -125,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 //            }
 //        }
     }
+
     private void processSelectedXmlFiles() {
         File officialDir = new File(getFilesDir() + "/official-data");
         officialDir.mkdirs();
@@ -145,8 +136,11 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
                 fis.close();
                 if (instanceId != null) {
                     File newFile = new File(officialDir, instanceId + ".xml");
+                    if (newFile.exists()) {
+                        newFile = new File(officialDir, instanceId + "_" + System.currentTimeMillis() + ".xml");
+                    }
                     Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    // Lưu thông tin vào cơ sở dữ liệu SQLite
+
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -158,17 +152,18 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
         }
 
 
-        }
+    }
+
     @Override
     public void onItemOnClick(Data data) {
-        clickData =data;
-        if(!clickData.isSelected()){
+        clickData = data;
+        if (!clickData.isSelected()) {
             selectedFiles.add(new File(clickData.getPath()));
-        }else   {
-           selectedFiles.remove(new File(clickData.getPath()));
+        } else {
+            selectedFiles.remove(new File(clickData.getPath()));
         }
 
-        File inputFile = new File(getFilesDir(),"data/"+data.getName());
+        File inputFile = new File(getFilesDir(), "data/" + data.getName());
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = null;
@@ -181,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
         try {
             doc = dBuilder.parse(inputFile);
             NodeList instanceIdList = doc.getElementsByTagName("instanceID");
-            if(instanceIdList != null){
+            if (instanceIdList != null) {
                 for (int i = 0; i < instanceIdList.getLength(); i++) {
                     Node instanceIdNode = instanceIdList.item(i);
                     String instanceIdValue = instanceIdNode.getTextContent();
@@ -189,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
                     System.out.println("Instance ID: " + instanceIdValue);
 
                 }
-            }else {
+            } else {
                 Toast.makeText(this, "Don't have InstanceID", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
@@ -197,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
         } catch (SAXException e) {
             e.printStackTrace();
         }
-
 
 
 //        try {
@@ -210,35 +204,11 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-       // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //        intent.setType("*/*"); // Hiển thị tất cả các loại tệp
 //        startActivityForResult(intent,  PICK_FILE_REQUEST_CODE);
 
 
-
-
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == IMPORT_REQUEST_CODE && resultCode == RESULT_OK) {
-            // Lấy URI của tệp đã chọn
-            Uri fileUri = data.getData();
-            System.out.println(fileUri + "tho123123");
-
-            // Mở InputStream để đọc tệp
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(fileUri);
-
-                // Xử lý tệp và sao chép vào thư mục mới tại đây
-                // ...
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
 

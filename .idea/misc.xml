@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/truon/Documents/BT_Android/testRTA/app/src/main/res/drawable/ic_launcher_background.xml" value="0.188" />
+        <entry key="..\:/Users/truon/Documents/BT_Android/testRTA/app/src/main/res/layout/activity_imported_data.xml" value="0.21666666666666667" />
         <entry key="..\:/Users/truon/Documents/BT_Android/testRTA/app/src/main/res/layout/activity_main.xml" value="0.275" />
+        <entry key="..\:/Users/truon/Documents/BT_Android/testRTA/app/src/main/res/layout/activity_main_data.xml" value="0.21666666666666667" />
         <entry key="..\:/Users/truon/Documents/BT_Android/testRTA/app/src/main/res/layout/item_data.xml" value="0.1" />
       </map>
     </option>

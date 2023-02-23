@@ -28,6 +28,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataVH> {
         this.dataList = dataList;
         this.listener = listener;
     }
+    public DataAdapter(Context mContext, ArrayList<Data> dataList) {
+        this.mContext = mContext;
+        this.dataList = dataList;
+        this.listener = listener;
+    }
 
 
     @NonNull

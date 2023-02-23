@@ -16,7 +16,7 @@
         android:theme="@style/Theme.TestRTA"
         tools:targetApi="31">
         <activity
-            android:name=".MainDataActivity"
+            android:name=".ImportedDataActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
