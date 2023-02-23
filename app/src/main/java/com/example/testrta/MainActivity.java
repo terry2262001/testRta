@@ -1,20 +1,30 @@
 package com.example.testrta;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testrta.Adapter.DataAdapter;
@@ -55,6 +65,10 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
     File[] files;
     DbHelper dbHelper;
 
+    TextView tvProgressbar ;
+    ProgressBar  progressBar;
+    ConstraintLayout wrapContent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 
         rvData = findViewById(R.id.rvData);
         btImport = findViewById(R.id.btImport);
+
+        progressBar = findViewById(R.id.progressBar);
+        tvProgressbar = findViewById(R.id.tvProgressbar);
+        wrapContent = findViewById(R.id.wrapContent);
 
         dataList = new ArrayList<>();
         dbHelper = new DbHelper(MainActivity.this);
@@ -75,8 +93,25 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
         btImport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                processSelectedXmlFiles();
-                startActivity(new Intent(MainActivity.this, ImportedDataActivity.class));
+                ProgressDialog pd = new ProgressDialog(MainActivity.this);
+                pd.setMessage("Move data...");
+                pd.show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        processSelectedXmlFiles();
+                      //  startActivity(new Intent(MainActivity.this, ImportedDataActivity.class));
+
+                        pd.dismiss();
+                    }
+                }, 1000);
+
+
+
+
+
+
             }
         });
 
@@ -91,8 +126,8 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
     }
 
 
+
     public void reachDat() throws IOException {
-        // File directory = new File(Environment.getExternalStorageDirectory() + "/data");
         File folder = new File(getFilesDir(), "data");
         files = folder.listFiles();
         if (files != null) {
@@ -105,19 +140,6 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
             }
         }
 
-//        for (File file : files) {
-//            filenames.add(file.getName());
-//        }
-//        List<File> selectedFiles = new ArrayList<File>();
-
-
-        //       for (int i = 0; i < filenames.size(); i++) {
-//            View listItem = listView.getChildAt(i);
-//            CheckBox checkBox = (CheckBox) listItem.findViewById(R.id.checkbox);
-//            if (checkBox.isChecked()) {
-//                selectedFiles.add(files[i]);
-//            }
-//        }
     }
 
     private void processSelectedXmlFiles() {
@@ -144,19 +166,38 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
                         newFile = new File(officialDir, instanceId + "_" + System.currentTimeMillis() + ".xml");
                     }
                     Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    ProgressDialog pd = new ProgressDialog(MainActivity.this);
+
                    if ( dbHelper.insertImportedData(new Data(instanceId,String.valueOf(newFile.toPath()),file.getName())) > 0){
-                       Toast.makeText(this, "Insert Success to database", Toast.LENGTH_SHORT).show();
+                       pd.setMessage("Insert Success to database ...");
+                       pd.show();
+                       Handler handler = new Handler();
+                       handler.postDelayed(new Runnable() {
+                           @Override
+                           public void run() {
+                                 startActivity(new Intent(MainActivity.this, ImportedDataActivity.class));
+                               pd.dismiss();
+                           }
+                       }, 2000);
+
+                    //   Toast.makeText(this, "Insert Success to database", Toast.LENGTH_SHORT).show();
+
                    }else {
-                       Toast.makeText(this, "Can't insert to database", Toast.LENGTH_SHORT).show();
+                       pd.setMessage("Can't insert to database ...");
+                       pd.show();
+                       Handler handler = new Handler();
+                       handler.postDelayed(new Runnable() {
+                           @Override
+                           public void run() {
+
+                               pd.dismiss();
+                           }
+                       }, 2000);
+                      // Toast.makeText(this, "Can't insert to database", Toast.LENGTH_SHORT).show();
                    }
 
 
-//                    SQLiteDatabase db = getWritableDatabase();
-//                    ContentValues values = new ContentValues();
-//                    values.put("instance_id", instanceId);
-//                    values.put("file_path", newFile.getAbsolutePath());
-//                    db.insert("xml_files", null, values);
-//                    db.close();
+
 
                 }
             } catch (FileNotFoundException e) {

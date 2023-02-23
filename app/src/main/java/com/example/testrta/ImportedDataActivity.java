@@ -70,6 +70,7 @@ public class ImportedDataActivity extends AppCompatActivity implements DataAdapt
     }
 
 
+
     @Override
     public void onItemOnClick(Data data) {
         clickData = data;
