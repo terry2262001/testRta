@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/wrapContent"
+   >
 
     <androidx.recyclerview.widget.RecyclerView
 
@@ -25,5 +27,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvData"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btGoto"
+        android:layout_width="150dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="5dp"
+        android:text="Go to File selected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rvData" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

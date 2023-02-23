@@ -1,6 +1,8 @@
 package com.example.testrta.Model;
 
-public class Data {
+import java.io.Serializable;
+
+public class Data implements Serializable {
     private String name ;
     private boolean isSelected = false;
     private String path;

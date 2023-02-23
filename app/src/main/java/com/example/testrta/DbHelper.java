@@ -2,9 +2,12 @@ package com.example.testrta;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.testrta.Model.Data;
+
+import java.util.Calendar;
 
 public class DbHelper {
     String dbName ="dbImportedDataManagement";
@@ -33,12 +36,25 @@ public class DbHelper {
     }
     public long insertImportedData(Data data){
         SQLiteDatabase db = openDB();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_INSTANCE_ID,data.getInstanceid());
-        contentValues.put(COL_PATH,data.getPath());
-        long tmp  = db.insert(tblImported, null,contentValues);
-        db.close();
-        return tmp;
+        Cursor cursor = db.rawQuery("SELECT * FROM tblImportedData WHERE instanceid = ?", new String[]{data.getInstanceid()});
+        if (cursor.moveToFirst()){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COL_INSTANCE_ID,data.getInstanceid()+"_"+ Calendar.getInstance().getTime());
+            contentValues.put(COL_PATH,data.getPath());
+            int tmp = db.update(tblImported,contentValues, "instanceid = ?", new String[]{data.getInstanceid()});
+            db.close();
+            return tmp;
+        }else {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COL_INSTANCE_ID,data.getInstanceid());
+            contentValues.put(COL_PATH,data.getPath());
+            long tmp  = db.insert(tblImported, null,contentValues);
+            db.close();
+            return tmp;
+
+
+        }
+
     }
 
 
