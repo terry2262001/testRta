@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 
 
         try {
-            reachData();
+            reachDat();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 
 
 
-    public void reachData() throws IOException {
+    public void reachDat() throws IOException {
        // File directory = new File(Environment.getExternalStorageDirectory() + "/data");
         File folder = new File(getFilesDir(), "data");
             files = folder.listFiles();
@@ -103,162 +103,96 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
             for (File file : files) {
 
                 if (file.isFile() && file.getName().endsWith(".xml")) {
-                    dataList.add(new Data(file.getName(),folder.getPath()+"/"+file.getName()));
-                    dataAdapter.notifyDataSetChanged();
+                    dataList.add(new Data(file.getName()));
+                   dataAdapter.notifyDataSetChanged();
                 }
             }
         }
 
+//        for (File file : files) {
+//            filenames.add(file.getName());
+//        }
+//        List<File> selectedFiles = new ArrayList<File>();
 
 
 
 
-
-
+ //       for (int i = 0; i < filenames.size(); i++) {
+//            View listItem = listView.getChildAt(i);
+//            CheckBox checkBox = (CheckBox) listItem.findViewById(R.id.checkbox);
+//            if (checkBox.isChecked()) {
+//                selectedFiles.add(files[i]);
+//            }
+//        }
     }
     private void processSelectedXmlFiles() {
-        Toast.makeText(this, "thád", Toast.LENGTH_SHORT).show();
-
-
         File officialDir = new File(getFilesDir() + "/datamain");
         officialDir.mkdirs();
         for (File file : selectedFiles) {
-            InputStream fis = null;
+
+            FileInputStream fis = null;
             try {
-                fis = new FileInputStream(file.getPath());
-                XmlPullParser parser = Xml.newPullParser();
+                fis = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            XmlPullParser parser = Xml.newPullParser();
+            try {
                 parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            }
+            try {
                 parser.setInput(fis, null);
-                String instanceId = null;
-                while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            }
+            String instanceId = null;
+            while (true) {
+                try {
+                    if (!(parser.next() != XmlPullParser.END_DOCUMENT)) break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                }
+                try {
                     if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("instanceID")) {
                         instanceId = parser.nextText();
                         break;
                     }
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            }
+            try {
                 fis.close();
-                if (instanceId != null) {
-                    File newFile = new File(officialDir, instanceId + ".xml");
-                   Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println(file.toPath() + "tho123_old");
-                    System.out.println(newFile.toPath() + "tho123_new");
-
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if (instanceId != null) {
+                File newFile = new File(officialDir, instanceId + ".xml");
+                System.out.println(file.toPath()+"tho123123123");
+                System.out.println(newFile.toPath()+"tho123123123");
 
-        }
-//        for (File file : selectedFiles) {
-//            InputStream fis = null;
-//            try {
-//                fis = new FileInputStream(file.getPath());
-//
-//                XmlPullParser parser = Xml.newPullParser();
-//                parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-//                parser.setInput(fis, null);
-//                String instanceId = null;
-//                while (true) {
-//                    if (!(parser.next() != XmlPullParser.END_DOCUMENT)) break;
-//                    if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("instanceID")) {
-//                        instanceId = parser.nextText();
-//                        break;
-//                    }
-//                }
-//                fis.close();
-//                if (instanceId != null) {
-//                    File newFile = new File(officialDir, instanceId + ".xml");
-//                System.out.println(file.toPath() + "tho123_old");
-//                System.out.println(newFile.toPath() + "tho123_new");
-//         //           Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//                }
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (XmlPullParserException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//
-//        }
-
-//        for (File file : selectedFiles) {
-//
-//            InputStream fis = null;
-//            try {
-//                fis = new FileInputStream(file.getPath());
-//                System.out.println(fis + "tho123123");
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            XmlPullParser parser = Xml.newPullParser();
-//            try {
-//                parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-//            } catch (XmlPullParserException e) {
-//                e.printStackTrace();
-//            }
-////            try {
-////                parser.setInput(fis, null);
-////            } catch (XmlPullParserException e) {
-////                e.printStackTrace();
-////            }
-//            String instanceId = null;
-//            while (true) {
-//                try {
-//                    if (!(parser.next() != XmlPullParser.END_DOCUMENT)) break;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (XmlPullParserException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("instanceID")) {
-//                        instanceId = parser.nextText();
-//                        break;
-//                    }
-//                } catch (XmlPullParserException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            try {
-//                fis.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            if (instanceId != null) {
-//                File newFile = new File(officialDir, instanceId + ".xml");
-//                System.out.println(file.toPath() + "tho123_old");
-//                System.out.println(newFile.toPath() + "tho123_new");
-//
 //                try {
 //                    Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 //                } catch (IOException e) {
 //                    e.printStackTrace();
 //                }
-//                // Lưu thông tin vào cơ sở dữ liệu SQLite
-//            }
-//        }
+                // Lưu thông tin vào cơ sở dữ liệu SQLite
+            }
+        }
     }
-
-
-
     @Override
     public void onItemOnClick(Data data) {
         clickData =data;
         if(!clickData.isSelected()){
-           selectedFiles.add(new File(clickData.getPath()));
-           // selectedFiles.add(new File(clickData.getName()));
-
+            selectedFiles.add(new File(clickData.getName()));
         }else   {
-          selectedFiles.remove(new File(clickData.getPath()));
-           // selectedFiles.add(new File(clickData.getPath()));
+           selectedFiles.remove(new File(clickData.getName()));
         }
 
         File inputFile = new File(getFilesDir(),"data/"+data.getName());
@@ -304,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 //            e.printStackTrace();
 //        }
        // Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("*/*");
+//        intent.setType("*/*"); // Hiển thị tất cả các loại tệp
 //        startActivityForResult(intent,  PICK_FILE_REQUEST_CODE);
 
 
