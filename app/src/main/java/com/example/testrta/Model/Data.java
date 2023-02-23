@@ -4,6 +4,7 @@ public class Data {
     private String name ;
     private boolean isSelected = false;
     private String path;
+    private String instanceid ;
 
 
     public String getName() {
@@ -22,21 +23,15 @@ public class Data {
         return path;
     }
 
-    public Data(String name, String path) {
-        this.name = name;
-        this.path = path;
+    public String getInstanceid() {
+        return instanceid;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setInstanceid(String instanceid) {
+        this.instanceid = instanceid;
     }
 
-    public Data() {
-    }
 
-//    public void setSelected(boolean selected) {
-//        isSelected = selected;
-//    }
 
     public boolean isSelected() {
         return isSelected;
@@ -47,7 +42,21 @@ public class Data {
     }
 
 
-//    public boolean isSelected() {
-//        return isSelected;
-//    }
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Data() {
+    }
+    public Data(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
+
+    public Data( String instanceid,String path,String name ) {
+        this.instanceid = instanceid;
+        this.path = path;
+        this.name = name;
+
+    }
 }

@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
     List<String> filenames = new ArrayList<String>();
     List<File> selectedFiles = new ArrayList<File>();
     File[] files;
+    DbHelper dbHelper;
 
 
     @Override
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
         btImport = findViewById(R.id.btImport);
 
         dataList = new ArrayList<>();
+        dbHelper = new DbHelper(MainActivity.this);
 
         rvData.setLayoutManager(new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL, false));
         rvData.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
@@ -140,6 +144,19 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
                         newFile = new File(officialDir, instanceId + "_" + System.currentTimeMillis() + ".xml");
                     }
                     Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                   if ( dbHelper.insertImportedData(new Data(instanceId,String.valueOf(newFile.toPath()),file.getName())) > 0){
+                       Toast.makeText(this, "Insert Success to database", Toast.LENGTH_SHORT).show();
+                   }else {
+                       Toast.makeText(this, "Can't insert to database", Toast.LENGTH_SHORT).show();
+                   }
+
+
+//                    SQLiteDatabase db = getWritableDatabase();
+//                    ContentValues values = new ContentValues();
+//                    values.put("instance_id", instanceId);
+//                    values.put("file_path", newFile.getAbsolutePath());
+//                    db.insert("xml_files", null, values);
+//                    db.close();
 
                 }
             } catch (FileNotFoundException e) {
