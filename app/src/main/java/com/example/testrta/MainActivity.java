@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
             for (File file : files) {
 
                 if (file.isFile() && file.getName().endsWith(".xml")) {
-                    dataList.add(new Data(file.getName()));
+                    dataList.add(new Data(file.getName(),file.getPath()));
                    dataAdapter.notifyDataSetChanged();
                 }
             }
@@ -126,73 +126,46 @@ public class MainActivity extends AppCompatActivity implements DataAdapter.onCli
 //        }
     }
     private void processSelectedXmlFiles() {
-        File officialDir = new File(getFilesDir() + "/datamain");
+        File officialDir = new File(getFilesDir() + "/official-data");
         officialDir.mkdirs();
         for (File file : selectedFiles) {
-
             FileInputStream fis = null;
             try {
-                fis = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            XmlPullParser parser = Xml.newPullParser();
-            try {
+                fis = new FileInputStream(file.getPath());
+                XmlPullParser parser = Xml.newPullParser();
                 parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
-            try {
                 parser.setInput(fis, null);
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
-            String instanceId = null;
-            while (true) {
-                try {
-                    if (!(parser.next() != XmlPullParser.END_DOCUMENT)) break;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (XmlPullParserException e) {
-                    e.printStackTrace();
-                }
-                try {
+                String instanceId = null;
+                while (parser.next() != XmlPullParser.END_DOCUMENT) {
                     if (parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals("instanceID")) {
                         instanceId = parser.nextText();
                         break;
                     }
-                } catch (XmlPullParserException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }
-            try {
                 fis.close();
+                if (instanceId != null) {
+                    File newFile = new File(officialDir, instanceId + ".xml");
+                    Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    // Lưu thông tin vào cơ sở dữ liệu SQLite
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (instanceId != null) {
-                File newFile = new File(officialDir, instanceId + ".xml");
-                System.out.println(file.toPath()+"tho123123123");
-                System.out.println(newFile.toPath()+"tho123123123");
-
-//                try {
-//                    Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-                // Lưu thông tin vào cơ sở dữ liệu SQLite
-            }
         }
-    }
+
+
+        }
     @Override
     public void onItemOnClick(Data data) {
         clickData =data;
         if(!clickData.isSelected()){
-            selectedFiles.add(new File(clickData.getName()));
+            selectedFiles.add(new File(clickData.getPath()));
         }else   {
-           selectedFiles.remove(new File(clickData.getName()));
+           selectedFiles.remove(new File(clickData.getPath()));
         }
 
         File inputFile = new File(getFilesDir(),"data/"+data.getName());
